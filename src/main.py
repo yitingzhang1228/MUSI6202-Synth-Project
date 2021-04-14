@@ -15,10 +15,11 @@ synthEngine = ['SineWaveNaive']
 # Example: biquadFilters = [('LP', 3000), ('HP', 1000)]
 biquadFilters = [('LP', 3000), ('HP', 1000)]
 
-# Effects (4 choices): processing in series
-# Choices: Echo, Tremolo, Flanger, Chorus
+# Effects (5 choices): processing in series
+# Choices: Echo, Tremolo, Flanger, Chorus, Reverb
+# Reverb Choices: Cathedral, Hall, Plate, Room, Tunnel
 # Example: effects = ['Echo', 'Tremolo']
-effects = ['Echo', 'Tremolo']
+effects = ['Cathedral']
 
 
 # Input: Synth engine

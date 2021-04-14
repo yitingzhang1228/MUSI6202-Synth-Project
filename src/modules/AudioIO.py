@@ -4,10 +4,12 @@ import soundfile as sf
 from .PlayingNotes import Instrument
 from .BiquadFilters import BiquadFilter
 from .ModulatedEffects import Echo, Tremolo, FlangerFB, SimpleChorus
+from. Reverb import Reverb
 
 
 class Orchestra(object):
-    def __init__(self, synthEngine, filters=None, effects=None):
+    def __init__(self, bufSize, synthEngine, filters=None, effects=None):
+        self.bufSize = bufSize
         self.instruments = []
         for synth in synthEngine:
             self.instruments.append(Instrument(synth))
@@ -28,6 +30,8 @@ class Orchestra(object):
                     self.globalEffects.append(FlangerFB())
                 elif effect == 'Chorus':
                     self.globalEffects.append(SimpleChorus())
+                elif effect == 'Cathedral' or 'Hall' or 'Plate' or 'Room' or 'Tunnel':
+                    self.globalEffects.append(Reverb(self.bufSize, effect))
                 else:
                     raise RuntimeError("Invalid effect type")
         self.globalEffects.append(BiquadFilter('LP'))
@@ -49,9 +53,9 @@ class Orchestra(object):
 
 
 class Score(object):
-    def __init__(self, synthEngine, notes, filters=None, effects=None):
+    def __init__(self, bufSize, synthEngine, notes, filters=None, effects=None):
         self.sr = 48000
-        self.orchestra = Orchestra(synthEngine, filters, effects)
+        self.orchestra = Orchestra(bufSize, synthEngine, filters, effects)
         self.notes = notes
         self.noteIdx = 0
         self.beatLengthInSamples = int(0.75 * self.sr)
@@ -73,13 +77,19 @@ def playScore(filename, length, synthEngine, notes, filters, effects):
     buffer = np.zeros(bufSize)
     lengthSamples = int(length * sr)
     numBlocks = int(lengthSamples / bufSize) + 1
-    score = Score(synthEngine=synthEngine, notes=notes, filters=filters, effects=effects)
+    outputBuffer = np.zeros(lengthSamples)
+    score = Score(bufSize=bufSize, synthEngine=synthEngine, notes=notes, filters=filters, effects=effects)
+
+    for i in range(numBlocks):
+        buffer *= 0
+        if i == numBlocks - 1:
+            buffer = np.zeros(lengthSamples - (numBlocks - 1) * bufSize)
+        score.render(buffer)
+        outputBuffer[bufSize * i: bufSize * (i + 1)] = buffer
+    outputBuffer = outputBuffer / max(outputBuffer)
 
     with sf.SoundFile(filename, 'wb', sr, 1) as f:
-        for i in range(numBlocks):
-            buffer *= 0
-            score.render(buffer)
-            f.write(buffer)
+        f.write(outputBuffer)
 
 
 def playAudio(inFile, outFile, filters=None, effects=None):
@@ -87,6 +97,7 @@ def playAudio(inFile, outFile, filters=None, effects=None):
     bufSize = 4096
     lengthSamples = len(x)
     numBlocks = int(lengthSamples / bufSize) + 1
+    outputBuffer = np.zeros(lengthSamples)
 
     myFilters = []
     if filters:
@@ -104,19 +115,24 @@ def playAudio(inFile, outFile, filters=None, effects=None):
                 myEffects.append(FlangerFB())
             elif effect == 'Chorus':
                 myEffects.append(SimpleChorus())
+            elif effect == 'Cathedral' or 'Hall' or 'Plate' or 'Room' or 'Tunnel':
+                myEffects.append(Reverb(bufSize, effect))
             else:
                 raise RuntimeError("Invalid effect type")
 
+    for i in range(numBlocks):
+        buffer = x[bufSize * i: bufSize * (i + 1)]
+        if filters:
+            output = np.zeros(len(buffer))
+            for filter in myFilters:
+                output += filter.process(buffer)
+            for j in range(len(buffer)):
+                buffer[j] = output[j]
+        if effects:
+            for effect in myEffects:
+                effect.render(buffer)
+        outputBuffer[bufSize * i: bufSize * (i + 1)] = buffer
+    outputBuffer = outputBuffer / max(outputBuffer)
+
     with sf.SoundFile(outFile, 'wb', sr, 1) as f:
-        for i in range(numBlocks):
-            buffer = x[bufSize * i: bufSize * (i + 1)]
-            if filters:
-                output = np.zeros(len(buffer))
-                for filter in myFilters:
-                    output += filter.process(buffer)
-                for i in range(len(buffer)):
-                    buffer[i] = output[i]
-            if effects:
-                for effect in myEffects:
-                    effect.render(buffer)
-            f.write(buffer)
+        f.write(outputBuffer)
