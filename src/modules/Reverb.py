@@ -6,7 +6,7 @@ class Reverb(object):
   def __init__(self, bufSize, type):
     # inFile = '../audio/input/impulse-response.wav'
     if type == 'Cathedral':
-      inFile = '../audio/IR/cathedral_4ch.wav'
+      inFile = '../audio/IR/cathedral_48k.wav'
     elif type == 'Hall':
       inFile = '../audio/IR/hall_48k.wav'
     elif type == 'Plate':

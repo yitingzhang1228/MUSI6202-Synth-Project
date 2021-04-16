@@ -71,7 +71,48 @@ class Score(object):
         self.curBeatPos -= len(buffer)
 
 
-def playScore(filename, length, synthEngine, notes, filters, effects):
+def SR_convert(inputBuffer, srIn, srOut=44100):
+    """
+    convert the inputBuffer array to new sampling rate, srOut
+    return: numpy array
+    """
+    ratio = srIn / srOut
+    inputBufferLength  = len(inputBuffer)
+    outputBufferLength = int(inputBufferLength / ratio)
+    outputBuffer = np.zeros(outputBufferLength)
+    for i in range(outputBufferLength):
+        idx_float = i*ratio  # float location
+        idx_int = int(idx_float)  # floor int location
+        # avoid bound error
+        zero = idx_int - 1
+        two = idx_int + 1
+        three = idx_int + 2
+        if zero < 0:
+            zero = 0
+        if three > inputBufferLength - 1:
+            two = inputBufferLength - 1
+            three = inputBufferLength - 1
+        if three > inputBufferLength - 2:
+            three = inputBufferLength - 1
+        y0 = inputBuffer[zero]
+        y1 = inputBuffer[idx_int]
+        y2 = inputBuffer[two]
+        y3 = inputBuffer[three]
+        mu = idx_float - idx_int
+        # Cubic Interpretation
+        mu2 = mu * mu
+        a0 = y3 - y2 - y0 + y1
+        a1 = y0 - y1 - a0
+        a2 = y2 - y0
+        a3 = y1
+        value = a0 * mu * mu2 + a1 * mu2 + a2 * mu + a3
+        outputBuffer[i] = value
+    return outputBuffer
+
+
+
+
+def playScore(filename, length, synthEngine, notes, filters, effects, output_samplingRate):
     sr = 48000
     bufSize = 4096
     buffer = np.zeros(bufSize)
@@ -88,11 +129,15 @@ def playScore(filename, length, synthEngine, notes, filters, effects):
         outputBuffer[bufSize * i: bufSize * (i + 1)] = buffer
     outputBuffer = outputBuffer / max(outputBuffer)
 
-    with sf.SoundFile(filename, 'wb', sr, 1) as f:
+    outputBuffer = SR_convert(outputBuffer, sr, output_samplingRate)
+
+    with sf.SoundFile(filename, 'wb', output_samplingRate, 1, 'PCM_24') as f:
         f.write(outputBuffer)
 
 
-def playAudio(inFile, outFile, filters=None, effects=None):
+
+
+def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=44100):
     x, sr = sf.read(inFile)
     bufSize = 4096
     lengthSamples = len(x)
@@ -134,5 +179,12 @@ def playAudio(inFile, outFile, filters=None, effects=None):
         outputBuffer[bufSize * i: bufSize * (i + 1)] = buffer
     outputBuffer = outputBuffer / max(outputBuffer)
 
-    with sf.SoundFile(outFile, 'wb', sr, 1) as f:
+
+    outputBuffer = SR_convert(outputBuffer, sr, output_samplingRate)
+
+    with sf.SoundFile(outFile, 'wb', output_samplingRate, 1, 'PCM_24') as f:
         f.write(outputBuffer)
+
+
+    #with sf.SoundFile(outFile, 'wb', 44100, 1, 'PCM_24') as f:
+    #    f.write(outputBuffer)

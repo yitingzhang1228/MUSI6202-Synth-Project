@@ -26,12 +26,11 @@ effects = ['Cathedral']
 # Use synthEngine, notes, filters (optional), effects (optional) defined above
 # Example:  playScore(filename=outFile, length=5, synthEngine=synthEngine, notes=notes, filters=biquadFilters, effects=effects)
 outFile = '../audio/output/synth_test.wav'
-playScore(filename=outFile, length=5, synthEngine=synthEngine, notes=notes, filters=biquadFilters, effects=effects)
+playScore(filename=outFile, length=5, synthEngine=synthEngine, notes=notes, filters=biquadFilters, effects=effects, output_samplingRate=44100)
 
 # Input: Audio
 # Use filters (optional), effects (optional) defined above
 # Example: playAudio(inFile, outFile, filters=biquadFilters, effects=effects)
 inFile = '../audio/input/sv.wav'
 outFile = '../audio/output/audio_test.wav'
-playAudio(inFile, outFile, filters=biquadFilters, effects=effects)
-
+playAudio(inFile, outFile, filters=biquadFilters, effects=effects, output_samplingRate=44100)
