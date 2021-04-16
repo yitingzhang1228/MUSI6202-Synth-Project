@@ -112,7 +112,7 @@ def SR_convert(inputBuffer, srIn, srOut=44100):
 
 
 
-def playScore(filename, length, synthEngine, notes, filters, effects, output_samplingRate):
+def playScore(filename, length, synthEngine, notes, filters, effects, output_samplingRate, bitDepth=24):
     sr = 48000
     bufSize = 4096
     buffer = np.zeros(bufSize)
@@ -131,13 +131,25 @@ def playScore(filename, length, synthEngine, notes, filters, effects, output_sam
 
     outputBuffer = SR_convert(outputBuffer, sr, output_samplingRate)
 
-    with sf.SoundFile(filename, 'wb', output_samplingRate, 1, 'PCM_24') as f:
+    #add -80dB triangular noise
+    for i in range(len(outputBuffer)):
+        outputBuffer[i] = outputBuffer[i] + 0.00001 * np.random.triangular(-1, 0, 1)
+
+    if bitDepth == 24:
+        format = 'PCM_24'
+    elif bitDepth == 16:
+        format = 'PCM_16'
+    else:
+        print("bitDepth not supported, default PCM_16")
+        format = 'PCM_16'
+
+    with sf.SoundFile(filename, 'wb', output_samplingRate, 1, format) as f:
         f.write(outputBuffer)
 
 
 
 
-def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=44100):
+def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=44100, bitDepth=24):
     x, sr = sf.read(inFile)
     bufSize = 4096
     lengthSamples = len(x)
@@ -179,10 +191,21 @@ def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=4
         outputBuffer[bufSize * i: bufSize * (i + 1)] = buffer
     outputBuffer = outputBuffer / max(outputBuffer)
 
-
     outputBuffer = SR_convert(outputBuffer, sr, output_samplingRate)
 
-    with sf.SoundFile(outFile, 'wb', output_samplingRate, 1, 'PCM_24') as f:
+    #add -80dB triangular noise
+    for i in range(len(outputBuffer)):
+        outputBuffer[i] = outputBuffer[i] + 0.00001 * np.random.triangular(-1, 0, 1)
+
+    if bitDepth == 24:
+        format = 'PCM_24'
+    elif bitDepth == 16:
+        format = 'PCM_16'
+    else:
+        print("bitDepth not supported, default PCM_16")
+        format = 'PCM_16'
+
+    with sf.SoundFile(outFile, 'wb', output_samplingRate, 1, format) as f:
         f.write(outputBuffer)
 
 
