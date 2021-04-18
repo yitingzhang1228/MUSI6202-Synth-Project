@@ -22,15 +22,15 @@ class Orchestra(object):
         self.globalEffects = []
         if effects:
             for effect in effects:
-                if effect[0] == 'Echo':
+                if effect[0].lower() == 'echo':
                     self.globalEffects.append(Echo(BL=effect[1]))
-                elif effect[0] == 'Tremolo':
+                elif effect[0].lower() == 'tremolo':
                     self.globalEffects.append(Tremolo(BL=effect[1]))
-                elif effect[0] == 'Flanger':
+                elif effect[0].lower() == 'flanger':
                     self.globalEffects.append(FlangerFB(BL=effect[1]))
-                elif effect[0] == 'Chorus':
+                elif effect[0].lower() == 'chorus':
                     self.globalEffects.append(SimpleChorus(BL=effect[1]))
-                elif effect[0] == 'Cathedral' or 'Hall' or 'Plate' or 'Room' or 'Tunnel':
+                elif effect[0].lower() == 'cathedral' or 'hall' or 'plate' or 'room' or 'tunnel':
                     self.globalEffects.append(Reverb(bufSize=self.bufSize, type=effect[0], BL=effect[1]))
                 else:
                     raise RuntimeError("Invalid effect type")
@@ -161,15 +161,15 @@ def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=4
     myEffects = []
     if effects:
         for effect in effects:
-            if effect[0] == 'Echo':
+            if effect[0].lower() == 'echo':
                 myEffects.append(Echo(BL=effect[1]))
-            elif effect[0] == 'Tremolo':
+            elif effect[0].lower() == 'tremolo':
                 myEffects.append(Tremolo(BL=effect[1]))
-            elif effect[0] == 'Flanger':
+            elif effect[0].lower() == 'flanger':
                 myEffects.append(FlangerFB(BL=effect[1]))
-            elif effect[0] == 'Chorus':
+            elif effect[0].lower() == 'chorus':
                 myEffects.append(SimpleChorus(BL=effect[1]))
-            elif effect[0] == 'Cathedral' or 'Hall' or 'Plate' or 'Room' or 'Tunnel':
+            elif effect[0].lower() == 'cathedral' or 'hall' or 'plate' or 'room' or 'tunnel':
                 myEffects.append(Reverb(bufSize=bufSize, type=effect[0], BL=effect[1]))
             else:
                 raise RuntimeError("Invalid effect type")

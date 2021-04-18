@@ -5,15 +5,15 @@ import soundfile as sf
 class Reverb(object):
   def __init__(self, bufSize, type, BL=0.3):
     # inFile = '../audio/input/impulse-response.wav'
-    if type == 'Cathedral':
+    if type == 'cathedral':
       inFile = '../audio/IR/cathedral_48k.wav'
-    elif type == 'Hall':
+    elif type == 'hall':
       inFile = '../audio/IR/hall_48k.wav'
-    elif type == 'Plate':
+    elif type == 'plate':
       inFile = '../audio/IR/plate_48k.wav'
-    elif type == 'Room':
+    elif type == 'room':
       inFile = '../audio/IR/room_48k.wav'
-    elif type == 'Tunnel':
+    elif type == 'tunnel':
       inFile = '../audio/IR/tunnel_48k.wav'
     else:
       raise RuntimeError("Undefined reverb type")

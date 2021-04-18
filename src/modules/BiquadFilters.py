@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 class BiquadFilter(object):
     def __init__(self, filterType, f0=None):
-        self.filterType = filterType  # 'HP' or 'LP'
+        self.filterType = filterType.upper()  # 'HP' or 'LP'
         self.sr = 48000
         if f0 is None and filterType == 'LP':
             self.f0 = 3000
@@ -86,6 +86,7 @@ class BiquadFilter(object):
         w, h = signal.freqz(b, a)
         w = self.sr * w / (2 * math.pi) / 1000
 
+        np.seterr(divide='ignore')
         plt.plot(w, 20 * np.log10(abs(h)), 'b')
         plt.xlabel('Frequency [kHz]')
         plt.xlim([0, 20])
