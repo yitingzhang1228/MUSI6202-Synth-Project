@@ -22,20 +22,20 @@ class Orchestra(object):
         self.globalEffects = []
         if effects:
             for effect in effects:
-                if effect == 'Echo':
-                    self.globalEffects.append(Echo())
-                elif effect == 'Tremolo':
-                    self.globalEffects.append(Tremolo())
-                elif effect == 'Flanger':
-                    self.globalEffects.append(FlangerFB())
-                elif effect == 'Chorus':
-                    self.globalEffects.append(SimpleChorus())
-                elif effect == 'Cathedral' or 'Hall' or 'Plate' or 'Room' or 'Tunnel':
-                    self.globalEffects.append(Reverb(self.bufSize, effect))
+                if effect[0] == 'Echo':
+                    self.globalEffects.append(Echo(BL=effect[1]))
+                elif effect[0] == 'Tremolo':
+                    self.globalEffects.append(Tremolo(BL=effect[1]))
+                elif effect[0] == 'Flanger':
+                    self.globalEffects.append(FlangerFB(BL=effect[1]))
+                elif effect[0] == 'Chorus':
+                    self.globalEffects.append(SimpleChorus(BL=effect[1]))
+                elif effect[0] == 'Cathedral' or 'Hall' or 'Plate' or 'Room' or 'Tunnel':
+                    self.globalEffects.append(Reverb(bufSize=self.bufSize, type=effect[0], BL=effect[1]))
                 else:
                     raise RuntimeError("Invalid effect type")
-        self.globalEffects.append(BiquadFilter('LP'))
-        self.globalEffects.append(BiquadFilter('HP'))
+        # self.globalEffects.append(BiquadFilter('LP'))
+        # self.globalEffects.append(BiquadFilter('HP'))
 
     def render(self, buffer):
         for instrument in self.instruments:
@@ -110,8 +110,6 @@ def SR_convert(inputBuffer, srIn, srOut=44100):
     return outputBuffer
 
 
-
-
 def playScore(filename, length, synthEngine, notes, filters, effects, output_samplingRate, bitDepth=24):
     sr = 48000
     bufSize = 4096
@@ -147,8 +145,6 @@ def playScore(filename, length, synthEngine, notes, filters, effects, output_sam
         f.write(outputBuffer)
 
 
-
-
 def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=44100, bitDepth=24):
     x, sr = sf.read(inFile)
     bufSize = 4096
@@ -161,19 +157,20 @@ def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=4
         for filter in filters:
             myFilters.append(BiquadFilter(filter[0], f0=filter[1]))
 
+
     myEffects = []
     if effects:
         for effect in effects:
-            if effect == 'Echo':
-                myEffects.append(Echo())
-            elif effect == 'Tremolo':
-                myEffects.append(Tremolo())
-            elif effect == 'Flanger':
-                myEffects.append(FlangerFB())
-            elif effect == 'Chorus':
-                myEffects.append(SimpleChorus())
-            elif effect == 'Cathedral' or 'Hall' or 'Plate' or 'Room' or 'Tunnel':
-                myEffects.append(Reverb(bufSize, effect))
+            if effect[0] == 'Echo':
+                myEffects.append(Echo(BL=effect[1]))
+            elif effect[0] == 'Tremolo':
+                myEffects.append(Tremolo(BL=effect[1]))
+            elif effect[0] == 'Flanger':
+                myEffects.append(FlangerFB(BL=effect[1]))
+            elif effect[0] == 'Chorus':
+                myEffects.append(SimpleChorus(BL=effect[1]))
+            elif effect[0] == 'Cathedral' or 'Hall' or 'Plate' or 'Room' or 'Tunnel':
+                myEffects.append(Reverb(bufSize=bufSize, type=effect[0], BL=effect[1]))
             else:
                 raise RuntimeError("Invalid effect type")
 
@@ -207,7 +204,6 @@ def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=4
 
     with sf.SoundFile(outFile, 'wb', output_samplingRate, 1, format) as f:
         f.write(outputBuffer)
-
 
     #with sf.SoundFile(outFile, 'wb', 44100, 1, 'PCM_24') as f:
     #    f.write(outputBuffer)

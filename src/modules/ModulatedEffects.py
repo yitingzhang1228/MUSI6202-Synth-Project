@@ -4,8 +4,9 @@ from .RingBuffer import RingBuffer, LinearWrap, LinearRingBuffer
 
 
 class Echo(object):
-    def __init__(self):
+    def __init__(self, BL=0.5):
         self.sr = 48000
+        self.BL = BL
         self.delayTime = 0.25
         self.delaySamps = int(self.delayTime * self.sr)
         self.ringBuf = RingBuffer(self.delaySamps)
@@ -14,15 +15,15 @@ class Echo(object):
         for i in range(len(buffer)):
             s = buffer[i]
             self.ringBuf.pushSample(s)
-            buffer[i] = s * 0.5 + self.ringBuf.delayedSample(self.delaySamps) * 0.5
+            buffer[i] = s * self.BL + self.ringBuf.delayedSample(self.delaySamps) * 0.5
 
 
 class Tremolo(object):
-    def __init__(self):
+    def __init__(self, BL=0.5):
         self.sr = 48000
         self.fmod = 5
         self.alpha = 0.5
-        self.BL = 0.5
+        self.BL = BL
         self.phi = 0
 
     def render(self, buffer):
@@ -40,12 +41,12 @@ class Tremolo(object):
 
 
 class SimpleChorus(object):
-    def __init__(self):
+    def __init__(self, BL=1):
         self.sr = 48000
         self.fmod = 1.5
         self.A = int(0.002 * self.sr)
         self.M = int(0.002 * self.sr)
-        self.BL = 1
+        self.BL = BL
         self.FF = 0.7
         self.maxDelaySamps = self.M + self.A + 2
         self.ringBuf = LinearRingBuffer(self.maxDelaySamps)
@@ -67,12 +68,12 @@ class SimpleChorus(object):
 
 
 class FlangerFB(object):
-    def __init__(self):
+    def __init__(self, BL=0.7):
         self.sr = 48000
         self.fmod = 0.1
         self.A = int(0.005 * self.sr)
         self.M = int(0.005 * self.sr)
-        self.BL = 0.7
+        self.BL = BL
         self.FF = 0.7
         self.FB = -0.7
         self.maxDelaySamps = self.M + self.A + 2

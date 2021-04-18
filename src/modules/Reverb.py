@@ -3,7 +3,7 @@ import soundfile as sf
 
 
 class Reverb(object):
-  def __init__(self, bufSize, type):
+  def __init__(self, bufSize, type, BL=0.3):
     # inFile = '../audio/input/impulse-response.wav'
     if type == 'Cathedral':
       inFile = '../audio/IR/cathedral_48k.wav'
@@ -24,7 +24,7 @@ class Reverb(object):
     h_pad = np.pad(h, (0, self.L - 1), 'constant', constant_values=(0, 0))
     self.H_n = np.fft.fft(h_pad)
     self.x_n = np.zeros(self.N)
-    self.BL = 0.3
+    self.BL = BL
 
   def render(self, buffer):
     self.x_n = np.concatenate((self.x_n[- (self.M - 1):], buffer))

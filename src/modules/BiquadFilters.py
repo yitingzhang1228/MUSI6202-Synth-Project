@@ -1,5 +1,7 @@
 import math
 import numpy as np
+from scipy import signal
+import matplotlib.pyplot as plt
 
 
 class BiquadFilter(object):
@@ -17,6 +19,7 @@ class BiquadFilter(object):
         self.xn2 = 0  # x[n-2]
         self.yn1 = 0  # y[n-1]
         self.yn2 = 0  # y[n-2]
+        self.plot()
 
     def calCoeff(self, filterType, f0, q):
         w0 = 2 * math.pi * f0 / self.sr
@@ -75,3 +78,19 @@ class BiquadFilter(object):
             self.yn1 = y
 
         return output
+
+    def plot(self):
+        b0, b1, b2, a0, a1, a2 = self.calCoeff(self.filterType, self.f0, self.q)
+        b = [b0, b1, b2]
+        a = [a0, a1, a2]
+        w, h = signal.freqz(b, a)
+        w = self.sr * w / (2 * math.pi) / 1000
+
+        plt.plot(w, 20 * np.log10(abs(h)), 'b')
+        plt.xlabel('Frequency [kHz]')
+        plt.xlim([0, 20])
+        plt.ylabel('Amplitude [dB]')
+        plt.title(self.filterType + ' filter frequency response')
+        plt.savefig('../fig/' + self.filterType + '.png')
+        plt.clf()
+

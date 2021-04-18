@@ -19,18 +19,24 @@ biquadFilters = [('LP', 3000), ('HP', 1000)]
 # Choices: Echo, Tremolo, Flanger, Chorus, Reverb
 # Reverb Choices: Cathedral, Hall, Plate, Room, Tunnel
 # Example: effects = ['Echo', 'Tremolo']
-effects = ['Cathedral']
+effects = [('Flanger', 0.5), ('Cathedral', 0.3)]
 
+# Sampling rate and bit depth (optional)
+# bit depth: [16, 24]
+sampling_rate = 24000
+bit_depth = 16
 
 # Input: Synth engine
 # Use synthEngine, notes, filters (optional), effects (optional) defined above
 # Example:  playScore(filename=outFile, length=5, synthEngine=synthEngine, notes=notes, filters=biquadFilters, effects=effects)
 outFile = '../audio/output/synth_test.wav'
-playScore(filename=outFile, length=5, synthEngine=synthEngine, notes=notes, filters=biquadFilters, effects=effects, output_samplingRate=20000,  bitDepth=16)
+playScore(filename=outFile, length=5, synthEngine=synthEngine, notes=notes, filters=biquadFilters, effects=effects,
+          output_samplingRate=sampling_rate,  bitDepth=bit_depth)
 
 # Input: Audio
 # Use filters (optional), effects (optional) defined above
 # Example: playAudio(inFile, outFile, filters=biquadFilters, effects=effects)
 inFile = '../audio/input/sv.wav'
 outFile = '../audio/output/audio_test.wav'
-playAudio(inFile, outFile, filters=biquadFilters, effects=effects, output_samplingRate=44100, bitDepth=24)
+playAudio(inFile, outFile, filters=biquadFilters, effects=effects,
+          output_samplingRate=sampling_rate, bitDepth=bit_depth)
