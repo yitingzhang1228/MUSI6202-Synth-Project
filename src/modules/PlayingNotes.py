@@ -1,7 +1,8 @@
 import numpy as np
 import math
 
-from .SynthEngine import SineWaveNaive, SquareWaveAdditive, SineWaveWavetable, SawWaveWavetable
+from .SynthEngine import SineWaveNaive, SquareWaveAdditive, SawWaveAdditive, \
+    SineWaveWavetable, SquareWaveWavetable, SawWaveWavetable
 
 noteMap = {
     'Ab': -11,
@@ -84,8 +85,12 @@ class PlayingNote(object):
             self.source = SineWaveNaive(noteToHz(note))
         elif synth == 'SquareWaveAdditive':
             self.source = SquareWaveAdditive(noteToHz(note))
+        elif synth == 'SawWaveAdditive':
+            self.source = SawWaveAdditive(noteToHz(note))
         elif synth == 'SineWaveWavetable':
             self.source = SineWaveWavetable(noteToHz(note))
+        elif synth == 'SquareWaveWavetable':
+            self.source = SquareWaveWavetable(noteToHz(note))
         elif synth == 'SawWaveWavetable':
             self.source = SawWaveWavetable(noteToHz(note))
         else:

@@ -16,45 +16,70 @@ print("""\
 \____\________________________\_\/
                     """)
 
-in_source = input("Enter sound source (audio/synth): ")
+in_source = input("Enter sound source (Audio/Synth): ")
 while True:
     if in_source.lower() != 'audio' and in_source.lower() != 'synth':
-        print("Invalid source type.")
-        in_source = input("Enter sound source (audio/synth): ")
+        print("* Invalid source type.")
+        in_source = input("Enter sound source (Audio/Synth): ")
     else:
         print('- Sound source:', in_source.lower())
         break
 
 if in_source.lower() == 'audio':
-    in_inFile = input('\nInput file name, e.g.(sv.wav): ')
+    in_inFile = input("\nInput file name (e.g.'sv.wav'): ")
     inFile = '../audio/input/' + in_inFile
     while True:
         if os.path.exists(inFile):
             print('- Load input file:', inFile)
             break
         else:
-            print('Audio file does not exist.')
-            in_inFile = input('Input file name, e.g.(sv.wav): ')
+            print('* Audio file does not exist.')
+            in_inFile = input("Input file name (e.g.'sv.wav'): ")
             inFile = '../audio/input/' + in_inFile
 
 elif in_source.lower() == 'synth':
     # synth engine
-    in_synthEngine = input('\nEnter synth engine (SineWaveNaive/SineWaveWavetable/SquareWaveAdditive/SawWaveWavetable): ').strip()
-    synthEngine = [in_synthEngine]
+    print('\nWaveforms: Sine, Square, Saw')
+    in_waveform = input("Enter waveform (e.g. 'Sine', 'Sine + Square'): ").strip()
+    in_synthType = input("Enter synth engine (Additive/Wavetable): ").strip()
+    synthEngine = []
+    if in_synthType.lower() == 'wavetable':
+        for wave in in_waveform.split(' + '):
+            if wave.lower() == 'square':
+                synthEngine.append('SquareWaveWavetable')
+            elif wave.lower() == 'saw':
+                synthEngine.append('SawWaveWavetable')
+            else:
+                if wave.lower() != 'sine':
+                    print('* Invalid waveform. Default: Sine')
+                synthEngine.append('SineWaveWavetable')
+    else:
+        if in_synthType.lower() != 'additive':
+            print('* Invalid waveform. Default: Additive')
+        for wave in in_waveform.split(' + '):
+            if wave.lower() == 'square':
+                synthEngine.append('SquareWaveAdditive')
+            elif wave.lower() == 'saw':
+                synthEngine.append('SawWaveAdditive')
+            else:
+                if wave.lower() != 'sine':
+                    print('* Invalid waveform. Default: Sine')
+                synthEngine.append('SineWaveNaive')
     print('- Synth engine:', synthEngine)
 
     # notes
-    in_notes = input('\nEnter notes, e.g.(A3 C4 E4 C4): ').strip()
+    print('\nScientific notations: note name (A-G) + accidental (#/b) if needed + octave number (0-9)')
+    in_notes = input("Enter notes (e.g. 'A3 C4 E4 C4', 'C#4 Gb4'): ").strip()
     notes = []
     for note in in_notes.split(' '):
-        notes.append((note[0], int(note[1])))
+        notes.append((note[:-1], int(note[-1])))
     print('- Notes:', notes)
 
 # filters
 in_ifFilter = input('\nAny HP/LP filters (y/n)? ')
 biquadFilters = []
 if in_ifFilter.lower() == 'y':
-    in_biquadFilters = input('Enter filter type and cut-off frequency, e.g.(LP 3000, HP 1000): ').strip()
+    in_biquadFilters = input("Enter filter type and cut-off frequency (e.g. 'LP 3000', 'LP 3000, HP 1000'): ").strip()
     for filter in in_biquadFilters.split(', '):
         biquadFilters.append((filter.split(' ')[0], float(filter.split(' ')[1])))
 print('- Filters:', biquadFilters)
@@ -65,31 +90,31 @@ print('Convolution based reverb: Cathedral, Hall, Plate, Room, Tunnel')
 effects = []
 in_ifEffect = input('Any effects (y/n)? ')
 if in_ifEffect.lower() == 'y':
-    in_effects = input('Enter effect type and mix/bland parameter, e.g.(Tremolo 0.5, Cathedral 0.3): ').strip()
+    in_effects = input("Enter effect type and mix/bland parameter (e.g. 'Echo 0.8', 'Tremolo 0.5, Cathedral 0.3'): ").strip()
     for effect in in_effects.split(', '):
         effects.append((effect.split(' ')[0], float(effect.split(' ')[1])))
 print('- Effects', effects)
 
 # sample rate and bit depth
-in_fs = input('\nOutput sample rate e.g.(48000): ')
-in_bd = input('Output bit depth (16/24): ')
-print('- Sample rate:', in_fs, 'Hz,', 'bit depth:', in_bd, 'bits')
-sampling_rate = int(in_fs)
+in_fs = input("\nOutput sample rate in kHz (e.g.'48'): ")
+in_bd = input("Output bit depth (16/24): ")
+print('- Sample rate:', in_fs, 'kHz,', 'bit depth:', in_bd, 'bits')
+sampling_rate = int(float(in_fs) * 1000)
 bit_depth = int(in_bd)
 
 # generate output
 if in_source.lower() == 'synth':
-    in_outFile = input('\nOutput file name, e.g.(synth.wav): ')
+    in_outFile = input("\nOutput file name (e.g.'synth.wav'): ")
     outFile = '../audio/output/' + in_outFile
     print('- Output file directory:', outFile)
 
     print('\nProcessing...')
-    playScore(filename=outFile, length=5, synthEngine=synthEngine, notes=notes, filters=biquadFilters,
+    playScore(filename=outFile, length=10, synthEngine=synthEngine, notes=notes, filters=biquadFilters,
               effects=effects, output_samplingRate=sampling_rate,  bitDepth=bit_depth)
-    print('\nSuccess!')
+    print('Success!')
 
 elif in_source.lower() == 'audio':
-    in_outFile = input('\nOutput file name, e.g.(audio.wav): ')
+    in_outFile = input("\nOutput file name (e.g.'audio.wav'): ")
     outFile = '../audio/output/' + in_outFile
     print('- Output file directory:', outFile)
 

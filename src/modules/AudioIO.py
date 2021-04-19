@@ -31,11 +31,9 @@ class Orchestra(object):
                 elif effect[0].lower() == 'chorus':
                     self.globalEffects.append(SimpleChorus(BL=effect[1]))
                 elif effect[0].lower() == 'cathedral' or 'hall' or 'plate' or 'room' or 'tunnel':
-                    self.globalEffects.append(Reverb(bufSize=self.bufSize, type=effect[0], BL=effect[1]))
+                    self.globalEffects.append(Reverb(bufSize=self.bufSize, type=effect[0].lower(), BL=effect[1]))
                 else:
                     raise RuntimeError("Invalid effect type")
-        # self.globalEffects.append(BiquadFilter('LP'))
-        # self.globalEffects.append(BiquadFilter('HP'))
 
     def render(self, buffer):
         for instrument in self.instruments:
@@ -125,7 +123,6 @@ def playScore(filename, length, synthEngine, notes, filters, effects, output_sam
             buffer = np.zeros(lengthSamples - (numBlocks - 1) * bufSize)
         score.render(buffer)
         outputBuffer[bufSize * i: bufSize * (i + 1)] = buffer
-    outputBuffer = outputBuffer / max(outputBuffer)
 
     outputBuffer = SR_convert(outputBuffer, sr, output_samplingRate)
 
@@ -141,6 +138,7 @@ def playScore(filename, length, synthEngine, notes, filters, effects, output_sam
         print("bitDepth not supported, default PCM_16")
         format = 'PCM_16'
 
+    outputBuffer = outputBuffer / max(outputBuffer)
     with sf.SoundFile(filename, 'wb', output_samplingRate, 1, format) as f:
         f.write(outputBuffer)
 
@@ -170,7 +168,7 @@ def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=4
             elif effect[0].lower() == 'chorus':
                 myEffects.append(SimpleChorus(BL=effect[1]))
             elif effect[0].lower() == 'cathedral' or 'hall' or 'plate' or 'room' or 'tunnel':
-                myEffects.append(Reverb(bufSize=bufSize, type=effect[0], BL=effect[1]))
+                myEffects.append(Reverb(bufSize=bufSize, type=effect[0].lower(), BL=effect[1]))
             else:
                 raise RuntimeError("Invalid effect type")
 
@@ -186,7 +184,6 @@ def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=4
             for effect in myEffects:
                 effect.render(buffer)
         outputBuffer[bufSize * i: bufSize * (i + 1)] = buffer
-    outputBuffer = outputBuffer / max(outputBuffer)
 
     outputBuffer = SR_convert(outputBuffer, sr, output_samplingRate)
 
@@ -202,6 +199,7 @@ def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=4
         print("bitDepth not supported, default PCM_16")
         format = 'PCM_16'
 
+    outputBuffer = outputBuffer / max(outputBuffer)
     with sf.SoundFile(outFile, 'wb', output_samplingRate, 1, format) as f:
         f.write(outputBuffer)
 
