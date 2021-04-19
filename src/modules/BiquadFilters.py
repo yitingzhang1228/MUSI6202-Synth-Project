@@ -93,5 +93,6 @@ class BiquadFilter(object):
         plt.ylabel('Amplitude [dB]')
         plt.title(self.filterType + ' filter frequency response')
         plt.savefig('../fig/' + self.filterType + '.png')
+        print('Plotting filter viz to ../fig/' + self.filterType + '.png')
         plt.clf()
 

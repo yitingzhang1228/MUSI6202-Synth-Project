@@ -26,7 +26,7 @@ while True:
         break
 
 if in_source.lower() == 'audio':
-    in_inFile = input("\nInput file name (e.g.'sv.wav'): ")
+    in_inFile = input("\nEnter input file name (e.g.'sv.wav'): ")
     inFile = '../audio/input/' + in_inFile
     while True:
         if os.path.exists(inFile):
@@ -41,7 +41,7 @@ elif in_source.lower() == 'synth':
     # synth engine
     print('\nWaveforms: Sine, Square, Saw')
     in_waveform = input("Enter waveform (e.g. 'Sine', 'Sine + Square'): ").strip()
-    in_synthType = input("Enter synth engine (Additive/Wavetable): ").strip()
+    in_synthType = input("Enter synth type (Additive/Wavetable): ").strip()
     synthEngine = []
     if in_synthType.lower() == 'wavetable':
         for wave in in_waveform.split(' + '):
@@ -68,7 +68,7 @@ elif in_source.lower() == 'synth':
     print('- Synth engine:', synthEngine)
 
     # notes
-    print('\nScientific notations: note name (A-G) + accidental (#/b) if needed + octave number (0-9)')
+    print('\nPitch notation: note name (A-G) + accidental (#/b) if needed + octave number (0-9)')
     in_notes = input("Enter notes (e.g. 'A3 C4 E4 C4', 'C#4 Gb4'): ").strip()
     notes = []
     for note in in_notes.split(' '):
@@ -76,13 +76,29 @@ elif in_source.lower() == 'synth':
     print('- Notes:', notes)
 
 # filters
-in_ifFilter = input('\nAny HP/LP filters (y/n)? ')
+print('\nBiquad filters: High pass (HP), Low pass (LP)')
+print('Filter modes: Series (+), Parallel (||)')
+in_ifFilter = input('Any filters (y/n)? ')
 biquadFilters = []
+filterConnection = 'series'
 if in_ifFilter.lower() == 'y':
-    in_biquadFilters = input("Enter filter type and cut-off frequency (e.g. 'LP 3000', 'LP 3000, HP 1000'): ").strip()
-    for filter in in_biquadFilters.split(', '):
-        biquadFilters.append((filter.split(' ')[0], float(filter.split(' ')[1])))
-print('- Filters:', biquadFilters)
+    in_biquadFilters = input("Enter filter type and cut-off frequency (e.g. 'LP 3000', 'HP 1000 + LP 3000'): ").strip()
+    if '+' in in_biquadFilters:
+        for filter in in_biquadFilters.split(' + '):
+            biquadFilters.append((filter.split(' ')[0], int(filter.split(' ')[1])))
+            filterConnection = 'series'
+        print('- Filters:', biquadFilters, 'in', filterConnection)
+    elif '||' in in_biquadFilters:
+        for filter in in_biquadFilters.split(' || '):
+            biquadFilters.append((filter.split(' ')[0], int(filter.split(' ')[1])))
+            filterConnection = 'parallel'
+        print('- Filters:', biquadFilters, 'in', filterConnection)
+    else:
+        biquadFilters.append((in_biquadFilters.split(' ')[0], int(in_biquadFilters.split(' ')[1])))
+        filterConnection = 'series'
+        print('- Filters:', biquadFilters)
+else:
+    print('- Filters:', biquadFilters)
 
 # effects
 print('\nDelay/Modulated effects: Echo, Tremolo, Flanger, Chorus')
@@ -93,33 +109,33 @@ if in_ifEffect.lower() == 'y':
     in_effects = input("Enter effect type and mix/bland parameter (e.g. 'Echo 0.8', 'Tremolo 0.5, Cathedral 0.3'): ").strip()
     for effect in in_effects.split(', '):
         effects.append((effect.split(' ')[0], float(effect.split(' ')[1])))
-print('- Effects', effects)
+print('- Effects:', effects)
 
 # sample rate and bit depth
-in_fs = input("\nOutput sample rate in kHz (e.g.'48'): ")
-in_bd = input("Output bit depth (16/24): ")
+in_fs = input("\nEnter output sample rate in kHz (e.g.'48'): ")
+in_bd = input("Enter output bit depth (16/24): ")
 print('- Sample rate:', in_fs, 'kHz,', 'bit depth:', in_bd, 'bits')
 sampling_rate = int(float(in_fs) * 1000)
 bit_depth = int(in_bd)
 
 # generate output
 if in_source.lower() == 'synth':
-    in_outFile = input("\nOutput file name (e.g.'synth.wav'): ")
+    in_outFile = input("\nEnter output file name (e.g.'synth.wav'): ")
     outFile = '../audio/output/' + in_outFile
     print('- Output file directory:', outFile)
 
     print('\nProcessing...')
-    playScore(filename=outFile, length=10, synthEngine=synthEngine, notes=notes, filters=biquadFilters,
+    playScore(filename=outFile, length=10, synthEngine=synthEngine, notes=notes, filters=(biquadFilters, filterConnection),
               effects=effects, output_samplingRate=sampling_rate,  bitDepth=bit_depth)
     print('Success!')
 
 elif in_source.lower() == 'audio':
-    in_outFile = input("\nOutput file name (e.g.'audio.wav'): ")
+    in_outFile = input("\nEnter output file name (e.g.'audio.wav'): ")
     outFile = '../audio/output/' + in_outFile
     print('- Output file directory:', outFile)
 
     print('\nProcessing...')
-    playAudio(inFile, outFile, filters=biquadFilters, effects=effects,
+    playAudio(inFile, outFile, filters=(biquadFilters, filterConnection), effects=effects,
               output_samplingRate=sampling_rate, bitDepth=bit_depth)
     print('Success!')
 

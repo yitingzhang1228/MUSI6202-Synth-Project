@@ -16,8 +16,9 @@ class Orchestra(object):
 
         self.filters = []
         if filters:
-            for filter in filters:
+            for filter in filters[0]:
                 self.filters.append(BiquadFilter(filter[0], f0=filter[1]))
+            self.filterConnection = filters[1]
 
         self.globalEffects = []
         if effects:
@@ -40,11 +41,15 @@ class Orchestra(object):
             instrument.render(buffer)
 
         if self.filters:
-            output = np.zeros(len(buffer))
-            for filter in self.filters:
-                output += filter.process(buffer)
-            for i in range(len(buffer)):
-                buffer[i] = output[i]
+            if self.filterConnection == 'parallel':
+                output = np.zeros(len(buffer))
+                for filter in self.filters:
+                    output += filter.process(buffer)
+                for i in range(len(buffer)):
+                    buffer[i] = output[i]
+            elif self.filterConnection == 'series':
+                for filter in self.filters:
+                    filter.render(buffer)
 
         for effect in self.globalEffects:
             effect.render(buffer)
@@ -152,9 +157,8 @@ def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=4
 
     myFilters = []
     if filters:
-        for filter in filters:
+        for filter in filters[0]:
             myFilters.append(BiquadFilter(filter[0], f0=filter[1]))
-
 
     myEffects = []
     if effects:
@@ -175,11 +179,15 @@ def playAudio(inFile, outFile, filters=None, effects=None, output_samplingRate=4
     for i in range(numBlocks):
         buffer = x[bufSize * i: bufSize * (i + 1)]
         if filters:
-            output = np.zeros(len(buffer))
-            for filter in myFilters:
-                output += filter.process(buffer)
-            for j in range(len(buffer)):
-                buffer[j] = output[j]
+            if filters[1] == 'parallel':
+                output = np.zeros(len(buffer))
+                for filter in myFilters:
+                    output += filter.process(buffer)
+                for j in range(len(buffer)):
+                    buffer[j] = output[j]
+            elif filters[1] == 'series':
+                for filter in myFilters:
+                    filter.render(buffer)
         if effects:
             for effect in myEffects:
                 effect.render(buffer)
