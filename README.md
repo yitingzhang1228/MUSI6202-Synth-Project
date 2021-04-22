@@ -4,8 +4,7 @@ MUSI6202: Music DSP Final Project
 Contributor: Kelian Li, Yiting Zhang
 
 ## Signal chain
-<p align="center"><img src="/fig/signal_chain.png" width="600" title="signal chain"></p>
-<p align="center">Fig. 1: Signal Chain</p>
+<p align="left"><img src="/fig/signal_chain.png" width="600" title="signal chain"></p>
 
 ## Usage
 ### To run it:
