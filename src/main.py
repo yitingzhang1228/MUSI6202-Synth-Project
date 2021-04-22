@@ -3,7 +3,7 @@ from modules.AudioIO import playScore, playAudio
 
 
 # command line interface
-print('Welcome to MUSI6202 Synth project!')
+print('\nWelcome to MUSI6202 Synth project!')
 print('Contributor: Kelian Li, Yiting Zhang')
 
 print(""" 
@@ -14,9 +14,10 @@ print("""
  / // / // /// // /// // /// / / / /
 /___ //////////////////////////_/ /
 \____\________________________\_\/
-                    """)
+               [from Forrest Cook]""")
 
-in_source = input("Enter sound source (Audio/Synth): ")
+
+in_source = input("\nEnter sound source (Audio/Synth): ")
 while True:
     if in_source.lower() != 'audio' and in_source.lower() != 'synth':
         print("* Invalid source type.")

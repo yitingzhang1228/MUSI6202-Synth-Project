@@ -28,7 +28,7 @@ Contributor: Kelian Li, Yiting Zhang
   * Mix/bland parameter
 * Output:
   * Sample rate: e.g. ```24``` kHz
-  * Bit rate: ```12```, ```24``` bits
+  * Bit rate: ```16```, ```24``` bits
 
 ### Files I/O:
 * Input audio files: ```audio/input```
