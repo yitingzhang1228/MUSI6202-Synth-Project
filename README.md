@@ -34,6 +34,8 @@ Contributor: Kelian Li, Yiting Zhang
 ### Files I/O:
 * Input audio files: ```audio/input```
 * Output audio files: ```audio/output```
+  * Sample output with ```Synth``` as sound source: ```audio/output/synth_sample.wav```
+  * Sample output with ```Audio``` as sound source: ```audio/output/audio_sample.wav```
 * Filter visualizations: ```fig```
 
 ### Sample run:
