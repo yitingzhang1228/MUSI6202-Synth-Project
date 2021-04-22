@@ -6,7 +6,7 @@ from modules.AudioIO import playScore, playAudio
 print('Welcome to MUSI6202 Synth project!')
 print('Contributor: Kelian Li, Yiting Zhang')
 
-print("""\
+print(""" 
      ________________________________
     /    o   oooo ooo oooo   o o o  /\ 
    /    oo  ooo  oo  oooo   o o o  / /
@@ -69,7 +69,7 @@ elif in_source.lower() == 'synth':
 
     # notes
     print('\nPitch notation: note name (A-G) + accidental (#/b) if needed + octave number (0-9)')
-    in_notes = input("Enter notes (e.g. 'A3 C4 E4 C4', 'C#4 Gb4'): ").strip()
+    in_notes = input("Enter notes (e.g. 'C#3 Gb3', 'A2 C3 E3 F3 E3 C3'): ").strip()
     notes = []
     for note in in_notes.split(' '):
         notes.append((note[:-1], int(note[-1])))
@@ -106,13 +106,13 @@ print('Convolution based reverb: Cathedral, Hall, Plate, Room, Tunnel')
 effects = []
 in_ifEffect = input('Any effects (y/n)? ')
 if in_ifEffect.lower() == 'y':
-    in_effects = input("Enter effect type and mix/bland parameter (e.g. 'Echo 0.8', 'Tremolo 0.5, Cathedral 0.3'): ").strip()
+    in_effects = input("Enter effect type and mix/bland parameter (e.g. 'Flanger 0.7', 'Echo 1.0, Tremolo 0.5, Tunnel 0.8'): ").strip()
     for effect in in_effects.split(', '):
         effects.append((effect.split(' ')[0], float(effect.split(' ')[1])))
 print('- Effects:', effects)
 
 # sample rate and bit depth
-in_fs = input("\nEnter output sample rate in kHz (e.g.'48'): ")
+in_fs = input("\nEnter output sample rate in kHz (e.g.'24'): ")
 in_bd = input("Enter output bit depth (16/24): ")
 print('- Sample rate:', in_fs, 'kHz,', 'bit depth:', in_bd, 'bits')
 sampling_rate = int(float(in_fs) * 1000)
@@ -125,7 +125,7 @@ if in_source.lower() == 'synth':
     print('- Output file directory:', outFile)
 
     print('\nProcessing...')
-    playScore(filename=outFile, length=10, synthEngine=synthEngine, notes=notes, filters=(biquadFilters, filterConnection),
+    playScore(filename=outFile, length=9.5, synthEngine=synthEngine, notes=notes, filters=(biquadFilters, filterConnection),
               effects=effects, output_samplingRate=sampling_rate,  bitDepth=bit_depth)
     print('Success!')
 
@@ -139,44 +139,46 @@ elif in_source.lower() == 'audio':
               output_samplingRate=sampling_rate, bitDepth=bit_depth)
     print('Success!')
 
-
+"""
 # Synth Engine (4 choices): can combine multiple wave generators
 # Choices: SineWaveNaive, SquareWaveAdditive, SineWaveWavetable, SawWaveWavetable
 # Example: synthEngines = ['SineWaveNaive', 'SquareWaveAdditive']
-# synthEngine = ['SineWaveNaive']
+synthEngine = ['SineWaveWavetable']
 
 # notes input, each note 0.75s
 # Example: notes = [('A', 3), ('C', 4), ('E', 4), ('C', 4)]
-# notes = [('A', 3), ('C', 4), ('E', 4), ('C', 4)]
+# notes = [('A', 3), ('C', 4), ('E', 4),('F', 4),('E', 4), ('C', 4)]
+notes = [('A', 2), ('C', 3), ('E', 3), ('F', 3), ('E', 3), ('C', 3)]
 
 # Biquad filters (2 choices): processing in parallel, indicate cutoff frequency (optional)
 # Choices: LP, HP
 # Example: biquadFilters = [('LP', 3000), ('HP', 1000)]
-# biquadFilters = [('LP', 3000), ('HP', 1000)]
+biquadFilters = [('LP', 3000), ('HP', 1000)]
+filterConnection = 'series'
 
 # Effects (5 choices): processing in series
 # Choices: Echo, Tremolo, Flanger, Chorus, Reverb
 # Reverb Choices: Cathedral, Hall, Plate, Room, Tunnel
 # Example: effects = ['Echo', 'Tremolo']
-# effects = [('Tremolo', 0.5), ('Cathedral', 0.3)]
+effects = [('Echo', 1), ('Tremolo', 0.5), ('Tunnel', 0.2)]
 
 # Sampling rate and bit depth (optional)
 # bit depth: [16, 24]
-# sampling_rate = 24000
-# bit_depth = 16
+sampling_rate = 24000
+bit_depth = 16
 
 # Input: Synth engine
 # Use synthEngine, notes, filters (optional), effects (optional) defined above
 # Example:  playScore(filename=outFile, length=5, synthEngine=synthEngine, notes=notes, filters=biquadFilters, effects=effects)
-# outFile = '../audio/output/synth_test.wav'
-# playScore(filename=outFile, length=5, synthEngine=synthEngine, notes=notes, filters=biquadFilters, effects=effects,
-#           output_samplingRate=sampling_rate,  bitDepth=bit_depth)
+outFile = '../audio/output/synth_sample1.wav'
+playScore(filename=outFile, length=9.5, synthEngine=synthEngine, notes=notes, filters=(biquadFilters, filterConnection), effects=effects,
+          output_samplingRate=sampling_rate,  bitDepth=bit_depth)
 
 # Input: Audio
 # Use filters (optional), effects (optional) defined above
 # Example: playAudio(inFile, outFile, filters=biquadFilters, effects=effects)
-# inFile = '../audio/input/sv.wav'
-# inFile = in_audio
-# outFile = '../audio/output/audio_test.wav'
-# playAudio(inFile, outFile, filters=biquadFilters, effects=effects,
-#           output_samplingRate=sampling_rate, bitDepth=bit_depth)
+inFile = '../audio/input/sv.wav'
+outFile = '../audio/output/audio_sample.wav'
+playAudio(inFile, outFile, filters=(biquadFilters, filterConnection), effects=effects,
+          output_samplingRate=sampling_rate, bitDepth=bit_depth)
+"""

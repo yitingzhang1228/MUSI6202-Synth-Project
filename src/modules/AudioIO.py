@@ -61,7 +61,7 @@ class Score(object):
         self.orchestra = Orchestra(bufSize, synthEngine, filters, effects)
         self.notes = notes
         self.noteIdx = 0
-        self.beatLengthInSamples = int(0.75 * self.sr)
+        self.beatLengthInSamples = int(0.5 * self.sr)
         self.curBeatPos = 0
 
     def render(self, buffer):

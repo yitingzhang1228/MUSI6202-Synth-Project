@@ -46,4 +46,4 @@ class Reverb(object):
       y_n_L = y_n[-self.L:]
 
     for i in range(len(buffer)):
-      buffer[i] = buffer[i] + self.BL * y_n_L[i]
+      buffer[i] = self.BL * buffer[i] + (1 - self.BL) * y_n_L[i]

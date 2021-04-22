@@ -7,7 +7,7 @@ class Echo(object):
     def __init__(self, BL=0.5):
         self.sr = 48000
         self.BL = BL
-        self.delayTime = 0.25
+        self.delayTime = 0.33
         self.delaySamps = int(self.delayTime * self.sr)
         self.ringBuf = RingBuffer(self.delaySamps)
 
@@ -21,8 +21,8 @@ class Echo(object):
 class Tremolo(object):
     def __init__(self, BL=0.5):
         self.sr = 48000
-        self.fmod = 5
-        self.alpha = 0.5
+        self.fmod = 8
+        self.alpha = 0.3
         self.BL = BL
         self.phi = 0
 
@@ -43,11 +43,11 @@ class Tremolo(object):
 class SimpleChorus(object):
     def __init__(self, BL=1):
         self.sr = 48000
-        self.fmod = 1.5
+        self.fmod = 2
         self.A = int(0.002 * self.sr)
         self.M = int(0.002 * self.sr)
         self.BL = BL
-        self.FF = 0.7
+        self.FF = 0.5
         self.maxDelaySamps = self.M + self.A + 2
         self.ringBuf = LinearRingBuffer(self.maxDelaySamps)
         self.phi = 0

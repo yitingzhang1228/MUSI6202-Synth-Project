@@ -80,7 +80,8 @@ class PlayingNote(object):
         self.effects = []
         self.amp = amp
         self.lifetimeSamples = noteLength * self.sr
-        self.envelope = ADSR(0.1, 0.2, 0.4, 0.1)
+        # self.envelope = ADSR(0.1, 0.1, 0.4, 0.1)
+        self.envelope = ADSR(0.02, 0.05, 0.2, 0.3)
         if synth == 'SineWaveNaive':
             self.source = SineWaveNaive(noteToHz(note))
         elif synth == 'SquareWaveAdditive':
@@ -123,7 +124,7 @@ class Instrument(object):
         self.instrumentEffects = []
 
     def makePlayingNote(self, note):
-        return PlayingNote(note, 2, 0.25, self.synth)
+        return PlayingNote(note, 1, 0.25, self.synth)
 
     def playNote(self, note):
         self.playingNotes.append(self.makePlayingNote(note))
