@@ -52,6 +52,7 @@ Contributor: Kelian Li, Yiting Zhang
  / // / // /// // /// // /// / / / /
 /___ //////////////////////////_/ /
 \____\________________________\_\/
+               [from Forrest Cook]
                     
 Enter sound source (Audio/Synth): Synth
 - Sound source: synth
